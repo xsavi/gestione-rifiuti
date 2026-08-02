@@ -80,11 +80,13 @@
             gap: 3px;
             justify-content: center;
             margin-top: 5px;
+            max-width: 100%;
         }
         .waste-indicator {
-            width: 10px;
-            height: 10px;
-            border: 1px solid rgba(255,255,255,0.4);
+            width: 12px;
+            height: 12px;
+            border: 1px solid #ffffff; /* BORDO BIANCO PER FARLI RISALTARE */
+            box-shadow: 0 0 2px rgba(0,0,0,0.5);
         }
         .shape-circle { border-radius: 50%; }
         .shape-square { border-radius: 2px; }
@@ -113,7 +115,7 @@
         .legend-color {
             width: 14px;
             height: 14px;
-            border: 1px solid rgba(255,255,255,0.4);
+            border: 1px solid #ffffff;
         }
         .legend-color.shape-circle { border-radius: 50%; }
         .legend-color.shape-square { border-radius: 2px; }
@@ -202,26 +204,26 @@
             border-radius: 15px;
             font-size: 13px;
         }
-        .today-waste-dot { width: 14px; height: 14px; border: 1px solid rgba(255,255,255,0.4); }
+        .today-waste-dot { width: 14px; height: 14px; border: 1px solid #ffffff; }
         .today-waste-dot.shape-circle { border-radius: 50%; }
         .today-waste-dot.shape-square { border-radius: 2px; }
         .no-waste-today { color: #aaa; font-style: italic; }
 
-        /* CORREZIONE PER SCHERMI PICCOLI (SMARTPHONE) */
+        /* CORREZIONE DEFINITIVA PER SMARTPHONE */
         @media (max-width: 480px) {
             .calendar-day { 
-                padding: 5px 2px; 
+                padding: 4px 2px; 
                 font-size: 11px; 
-                min-height: 55px; /* Aumentato per far stare i simboli su più righe */
+                min-height: 60px; /* Altezza aumentata per ospitare più simboli */
             }
             .calendar-header { 
                 font-size: 10px; 
                 padding: 8px 2px; 
             }
             .waste-indicator { 
-                width: 10px; /* Ingrandito da 8 a 10 */
-                height: 10px; 
-                border: none; /* Tolto il bordo per far vedere il colore pieno */
+                width: 12px; /* Dimensione aumentata */
+                height: 12px; 
+                border: 1px solid #ffffff; /* Bordo bianco per contrasto */
             }
             .waste-indicators {
                 gap: 2px;
@@ -237,17 +239,17 @@
         <h1>🗑️ Gestione Rifiuti</h1>
 
         <div id="installPrompt" class="install-prompt" style="display: none;">
-            <p>📱 Installa l'app per ricevere notifiche anche quando è chiusa!</p>
+            <p> Installa l'app per ricevere notifiche anche quando è chiusa!</p>
             <button onclick="installApp()">Installa App</button>
         </div>
 
         <div class="today-info" id="todayInfo">
-            <h3>📅 Oggi</h3>
+            <h3> Oggi</h3>
             <div id="todayWasteList"></div>
         </div>
 
         <div class="section">
-            <h2> Calendario Raccolta</h2>
+            <h2>📅 Calendario Raccolta</h2>
             <div class="month-nav">
                 <button onclick="changeMonth(-1)">◀</button>
                 <h3 id="currentMonth"></h3>
@@ -320,16 +322,16 @@
             <div class="file-input-wrapper">
                 <input type="file" id="fileInput" accept=".json" onchange="loadCalendarFile(event)">
                 <label for="fileInput" class="file-input-label">
-                    📁 Clicca per selezionare file JSON
+                     Clicca per selezionare file JSON
                 </label>
             </div>
-            <button onclick="downloadTemplate()" style="margin-top: 10px;">📥 Scarica Template</button>
+            <button onclick="downloadTemplate()" style="margin-top: 10px;"> Scarica Template</button>
             <button onclick="downloadCurrentCalendar()">💾 Esporta Calendario Attuale</button>
             <div id="fileStatus"></div>
         </div>
 
         <div class="section">
-            <h2>📱 Condividi l'App</h2>
+            <h2> Condividi l'App</h2>
             <p style="margin-bottom: 15px; color: #aaa; text-align: center;">Inquadra questo QR code per aprire l'app sul tuo telefono:</p>
             <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 15px;">
                 <img id="qrImage" src="" alt="QR Code" style="width: 200px; height: 200px; display: block; margin: 0 auto;">
