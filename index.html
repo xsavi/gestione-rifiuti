@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Rifiuti</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00ff88;
+            font-size: 28px;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .section {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.1);
+        }
+
+        .section h2 {
+            color: #00ff88;
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 15px;
+        }
+
+        .calendar-header {
+            text-align: center;
+            padding: 10px;
+            background: #00ff88;
+            color: #000;
+            font-weight: bold;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 12px 5px;
+            background: #2a2a2a;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .calendar-day:hover {
+            background: #3a3a3a;
+            transform: scale(1.05);
+        }
+
+        .calendar-day.today {
+            border-color: #00ff88;
+            background: #1a3a2a;
+        }
+
+        .calendar-day.has-waste {
+            position: relative;
+        }
+
+        .waste-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 3px;
+        }
+
+        .waste-organico { background: #8B4513; }
+        .waste-plastica { background: #FFD700; }
+        .waste-vetro { background: #00CED1; }
+        .waste-carta { background: #4169E1; }
+        .waste-indifferenziata { background: #808080; }
+        .waste-alluminio { background: #C0C0C0; }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        button {
+            background: #00ff88;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 2px dashed #00ff88;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-input-label:hover {
+            background: #3a3a3a;
+            border-color: #00cc6a;
+        }
+
+        #qrcode {
+            text-align: center;
+            margin-top: 15px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+        }
+
+        .month-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .month-nav button {
+            width: auto;
+            padding: 8px 15px;
+        }
+
+        .month-nav h3 {
+            color: #00ff88;
+            font-size: 18px;
+        }
+
+        .notification-badge {
+            display: inline-block;
+            background: #ff4444;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .status.success {
+            background: #1a3a2a;
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+
+        .status.error {
+            background: #3a1a1a;
+            color: #ff4444;
+            border: 1px solid #ff4444;
+        }
+
+        .install-prompt {
+            background: #1a3a2a;
+            border: 2px solid #00ff88;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .install-prompt button {
+            margin-top: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .calendar-day {
+                padding: 8px 3px;
+                font-size: 12px;
+                min-height: 40px;
+            }
+
+            .calendar-header {
+                font-size: 10px;
+                padding: 8px 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ Gestione Rifiuti</h1>
+
+        <div id="installPrompt" class="install-prompt" style="display: none;">
+            <p>📱 Installa l'app per ricevere notifiche anche quando è chiusa!</p>
+            <button onclick="installApp()">Installa App</button>
+        </div>
+
+        <!-- Calendario -->
+        <div class="section">
+            <h2>📅 Calendario Raccolta</h2>
+            <div class="month-nav">
+                <button onclick="changeMonth(-1)">◀</button>
+                <h3 id="currentMonth"></h3>
+                <button onclick="changeMonth(1)">▶</button>
+            </div>
+            <div class="calendar" id="calendar"></div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color waste-organico"></div>
+                    <span>Organico</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color waste-plastica"></div>
+                    <span>Plastica</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color waste-vetro"></div>
+                    <span>Vetro</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color waste-carta"></div>
+                    <span>Carta</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color waste-indifferenziata"></div>
+                    <span>Indifferenziata</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color waste-alluminio"></div>
+                    <span>Alluminio</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Impostazioni Notifiche -->
+        <div class="section">
+            <h2>⏰ Orario Avviso</h2>
+            <p style="margin-bottom: 10px; color: #aaa;">Scegli a che ora ricevere la notifica per mettere fuori i rifiuti:</p>
+            <input type="time" id="notificationTime" value="20:00">
+            <button onclick="saveNotificationTime()">Salva Orario</button>
+            <button onclick="requestNotificationPermission()">Attiva Notifiche</button>
+            <div id="notificationStatus"></div>
+        </div>
+
+        <!-- Aggiornamento Calendario -->
+        <div class="section">
+            <h2>📤 Aggiorna Calendario</h2>
+            <p style="margin-bottom: 10px; color: #aaa;">Carica un file JSON con il calendario aggiornato:</p>
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" accept=".json" onchange="loadCalendarFile(event)">
+                <label for="fileInput" class="file-input-label">
+                    📁 Clicca per selezionare file JSON
+                </label>
+            </div>
+            <button onclick="downloadTemplate()" style="margin-top: 10px;">📥 Scarica Template</button>
+            <button onclick="downloadCurrentCalendar()">💾 Esporta Calendario Attuale</button>
+            <div id="fileStatus"></div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="section">
+            <h2>📱 Condividi</h2>
+            <p style="margin-bottom: 10px; color: #aaa;">Scansiona il QR code per condividere il calendario:</p>
+            <button onclick="generateQRCode()">Genera QR Code</button>
+            <div id="qrcode"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script>
+        // Dati calendario
+        let calendarData = {};
+        let currentDate = new Date();
+        let notificationTime = '20:00';
+        let deferredPrompt = null;
+
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCalendarData();
+            renderCalendar();
+            loadSettings();
+            setupNotifications();
+            checkInstallPrompt();
+        });
+
+        // Carica dati dal localStorage
+        function loadCalendarData() {
+            const saved = localStorage.getItem('wasteCalendar');
+            if (saved) {
+                calendarData = JSON.parse(saved);
+            } else {
+                // Dati di esempio
+                calendarData = generateSampleData();
+                saveCalendarData();
+            }
+        }
+
+        // Salva dati nel localStorage
+        function saveCalendarData() {
+            localStorage.setItem('wasteCalendar', JSON.stringify(calendarData));
+        }
+
+        // Genera dati di esempio
+        function generateSampleData() {
+            const data = {};
+            const year = new Date().getFullYear();
+            const wasteTypes = ['organico', 'plastica', 'vetro', 'carta', 'indifferenziata', 'alluminio'];
+            
+            for (let month = 0; month < 12; month++) {
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const dayOfWeek = new Date(year, month, day).getDay();
+                    
+                    // Assegna rifiuti in base al giorno della settimana
+                    if (dayOfWeek === 1) data[dateStr] = ['organico'];
+                    else if (dayOfWeek === 2) data[dateStr] = ['plastica', 'alluminio'];
+                    else if (dayOfWeek === 3) data[dateStr] = ['organico'];
+                    else if (dayOfWeek === 4) data[dateStr] = ['carta'];
+                    else if (dayOfWeek === 5) data[dateStr] = ['organico', 'vetro'];
+                }
+            }
+            return data;
+        }
+
+        // Renderizza calendario
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            document.getElementById('currentMonth').textContent = 
+                new Date(year, month).toLocaleString('it', { month: 'long', year: 'numeric' });
+            
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+            
+            // Header giorni della settimana
+            const days = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+            days.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-header';
+                header.textContent = day;
+                calendar.appendChild(header);
+            });
+            
+            // Primo giorno del mese
+            const firstDay = new Date(year, month, 1);
+            let startingDay = firstDay.getDay() - 1;
+            if (startingDay < 0) startingDay = 6;
+            
+            // Giorni vuoti
+            for (let i = 0; i < startingDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'calendar-day';
+                calendar.appendChild(empty);
+            }
+            
+            // Giorni del mese
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                if (today.getDate() === day && today.getMonth() === month && today.getFullYear() === year) {
+                    dayElement.classList.add('today');
+                }
+                
+                if (calendarData[dateStr]) {
+                    dayElement.classList.add('has-waste');
+                    dayElement.innerHTML = `
+                        <span>${day}</span>
+                        <div class="waste-indicator waste-${calendarData[dateStr][0]}"></div>
+                    `;
+                    dayElement.onclick = () => showWasteInfo(dateStr);
+                } else {
+                    dayElement.textContent = day;
+                }
+                
+                calendar.appendChild(dayElement);
+            }
+        }
+
+        // Mostra info rifiuti
+        function showWasteInfo(dateStr) {
+            const wastes = calendarData[dateStr];
+            const wasteNames = {
+                'organico': '🟤 Organico',
+                'plastica': '🟡 Plastica',
+                'vetro': '🔵 Vetro',
+                'carta': '🔷 Carta',
+                'indifferenziata': '⚫ Indifferenziata',
+                'alluminio': '⚪ Alluminio'
+            };
+            
+            const names = wastes.map(w => wasteNames[w]).join(', ');
+            alert(`Data: ${dateStr}\nRifiuti: ${names}`);
+        }
+
+        // Cambia mese
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // Carica file calendario
+        function loadCalendarFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    calendarData = data;
+                    saveCalendarData();
+                    renderCalendar();
+                    showStatus('fileStatus', 'Calendario aggiornato con successo!', 'success');
+                } catch (error) {
+                    showStatus('fileStatus', 'Errore nel caricamento del file. Verifica il formato JSON.', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Scarica template
+        function downloadTemplate() {
+            const template = {
+                "2024-01-01": ["organico"],
+                "2024-01-02": ["plastica", "alluminio"],
+                "2024-01-03": ["carta"]
+            };
+            downloadJSON(template, 'template_calendario_rifiuti.json');
+        }
+
+        // Esporta calendario attuale
+        function downloadCurrentCalendar() {
+            downloadJSON(calendarData, 'calendario_rifiuti.json');
+        }
+
+        // Download JSON
+        function downloadJSON(data, filename) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Genera QR Code
+        function generateQRCode() {
+            const url = window.location.href;
+            QRCode.toDataURL(url, {
+                width: 300,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#ffffff'
+                }
+            }, (err, url) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                const qrcodeDiv = document.getElementById('qrcode');
+                qrcodeDiv.innerHTML = `<img src="${url}" alt="QR Code" style="max-width: 100%;">`;
+            });
+        }
+
+        // Gestione notifiche
+        function setupNotifications() {
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    scheduleDailyNotification();
+                }
+            }
+        }
+
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        showStatus('notificationStatus', 'Notifiche attivate con successo!', 'success');
+                        scheduleDailyNotification();
+                    } else {
+                        showStatus('notificationStatus', 'Permessi notifiche negati.', 'error');
+                    }
+                });
+            } else {
+                showStatus('notificationStatus', 'Il browser non supporta le notifiche.', 'error');
+            }
+        }
+
+        function saveNotificationTime() {
+            notificationTime = document.getElementById('notificationTime').value;
+            localStorage.setItem('notificationTime', notificationTime);
+            scheduleDailyNotification();
+            showStatus('notificationStatus', `Orario salvato: ${notificationTime}`, 'success');
+        }
+
+        function scheduleDailyNotification() {
+            if ('serviceWorker' in navigator && Notification.permission === 'granted') {
+                // Registra service worker per notifiche in background
+                navigator.serviceWorker.ready.then(registration => {
+                    // Pianifica notifica giornaliera
+                    const [hours, minutes] = notificationTime.split(':');
+                    const now = new Date();
+                    const notificationTime = new Date();
+                    notificationTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                    
+                    if (notificationTime < now) {
+                        notificationTime.setDate(notificationTime.getDate() + 1);
+                    }
+                    
+                    const timeUntilNotification = notificationTime - now;
+                    
+                    setTimeout(() => {
+                        const today = new Date().toISOString().split('T')[0];
+                        const wastes = calendarData[today];
+                        
+                        if (wastes) {
+                            const wasteNames = {
+                                'organico': 'Organico',
+                                'plastica': 'Plastica',
+                                'vetro': 'Vetro',
+                                'carta': 'Carta',
+                                'indifferenziata': 'Indifferenziata',
+                                'alluminio': 'Alluminio'
+                            };
+                            
+                            const names = wastes.map(w => wasteNames[w]).join(', ');
+                            
+                            registration.showNotification('🗑️ Ricorda i rifiuti!', {
+                                body: `Oggi metti fuori: ${names}`,
+                                icon: '/icon-192.png',
+                                badge: '/icon-192.png',
+                                vibrate: [200, 100, 200],
+                                tag: 'daily-waste-reminder'
+                            });
+                        }
+                        
+                        // Riprogramma per il giorno dopo
+                        setTimeout(() => scheduleDailyNotification(), 24 * 60 * 60 * 1000);
+                    }, timeUntilNotification);
+                });
+            }
+        }
+
+        function loadSettings() {
+            const savedTime = localStorage.getItem('notificationTime');
+            if (savedTime) {
+                notificationTime = savedTime;
+                document.getElementById('notificationTime').value = savedTime;
+            }
+        }
+
+        // PWA Install
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPrompt').style.display = 'block';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('installPrompt').style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        function checkInstallPrompt() {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('installPrompt').style.display = 'none';
+            }
+        }
+
+        // Utility: mostra stato
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+            setTimeout(() => {
+                element.innerHTML = '';
+            }, 5000);
+        }
+
+        // Registra Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(registration => {
+                console.log('Service Worker registrato');
+            }).catch(error => {
+                console.log('Errore registrazione Service Worker:', error);
+            });
+        }
+    </script>
+</body>
+</html>
