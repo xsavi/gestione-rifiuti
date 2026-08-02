@@ -44,21 +44,24 @@
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 4px;
             margin-top: 15px;
         }
         .calendar-header {
             text-align: center;
-            padding: 10px;
+            padding: 8px 2px;
             background: #00ff88;
             color: #000;
             font-weight: bold;
             border-radius: 5px;
-            font-size: 12px;
+            font-size: 11px;
         }
+        
+        /* NUOVO LAYOUT CELLA CALENDARIO */
         .calendar-day {
+            position: relative;
             text-align: center;
-            padding: 12px 5px;
+            padding: 3px 2px;
             background: #2a2a2a;
             border-radius: 8px;
             cursor: pointer;
@@ -69,28 +72,44 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 14px;
+            font-size: 13px;
+            overflow: hidden;
         }
         .calendar-day:hover { background: #3a3a3a; transform: scale(1.05); }
         .calendar-day.today { border-color: #00ff88; background: #1a3a2a; }
-        .calendar-day.has-waste { position: relative; }
+        .calendar-day.has-waste { background: #333333; }
+        
+        /* Numero del giorno al centro */
+        .day-number {
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1;
+            margin-bottom: 2px;
+            z-index: 1;
+        }
+        
+        /* Contenitore simboli attorno al numero */
         .waste-indicators {
             display: flex;
             flex-wrap: wrap;
-            gap: 3px;
             justify-content: center;
-            margin-top: 5px;
+            gap: 2px;
             max-width: 100%;
+            line-height: 1;
         }
+        
+        /* Simboli piccoli ma con bordo spesso per visibilità */
         .waste-indicator {
-            width: 12px;
-            height: 12px;
-            border: 1px solid #ffffff; /* BORDO BIANCO PER FARLI RISALTARE */
-            box-shadow: 0 0 2px rgba(0,0,0,0.5);
+            width: 7px;
+            height: 7px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 2px rgba(0,0,0,0.8);
+            flex-shrink: 0;
         }
         .shape-circle { border-radius: 50%; }
         .shape-square { border-radius: 2px; }
 
+        /* Colori */
         .waste-organico { background: #8B4513; }
         .waste-plastica { background: #FFD700; }
         .waste-vetro { background: #00CED1; }
@@ -115,7 +134,7 @@
         .legend-color {
             width: 14px;
             height: 14px;
-            border: 1px solid #ffffff;
+            border: 2px solid #ffffff;
         }
         .legend-color.shape-circle { border-radius: 50%; }
         .legend-color.shape-square { border-radius: 2px; }
@@ -204,42 +223,53 @@
             border-radius: 15px;
             font-size: 13px;
         }
-        .today-waste-dot { width: 14px; height: 14px; border: 1px solid #ffffff; }
+        .today-waste-dot { width: 14px; height: 14px; border: 2px solid #ffffff; }
         .today-waste-dot.shape-circle { border-radius: 50%; }
         .today-waste-dot.shape-square { border-radius: 2px; }
         .no-waste-today { color: #aaa; font-style: italic; }
 
-        /* CORREZIONE DEFINITIVA PER SMARTPHONE */
+        .debug-info {
+            background: #333;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #00ff88;
+            text-align: center;
+        }
+
         @media (max-width: 480px) {
             .calendar-day { 
-                padding: 4px 2px; 
-                font-size: 11px; 
-                min-height: 60px; /* Altezza aumentata per ospitare più simboli */
+                padding: 2px 1px; 
+                min-height: 48px;
             }
             .calendar-header { 
-                font-size: 10px; 
-                padding: 8px 2px; 
+                font-size: 9px; 
+                padding: 6px 1px; 
+            }
+            .day-number {
+                font-size: 12px;
             }
             .waste-indicator { 
-                width: 12px; /* Dimensione aumentata */
-                height: 12px; 
-                border: 1px solid #ffffff; /* Bordo bianco per contrasto */
+                width: 6px;
+                height: 6px; 
+                border: 2px solid #ffffff;
             }
             .waste-indicators {
-                gap: 2px;
+                gap: 1px;
             }
             .legend-item { 
-                font-size: 10px; 
+                font-size: 9px; 
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🗑️ Gestione Rifiuti</h1>
+        <h1>️ Gestione Rifiuti</h1>
 
         <div id="installPrompt" class="install-prompt" style="display: none;">
-            <p> Installa l'app per ricevere notifiche anche quando è chiusa!</p>
+            <p>📱 Installa l'app per ricevere notifiche anche quando è chiusa!</p>
             <button onclick="installApp()">Installa App</button>
         </div>
 
@@ -251,11 +281,13 @@
         <div class="section">
             <h2>📅 Calendario Raccolta</h2>
             <div class="month-nav">
-                <button onclick="changeMonth(-1)">◀</button>
+                <button onclick="changeMonth(-1)"></button>
                 <h3 id="currentMonth"></h3>
                 <button onclick="changeMonth(1)">▶</button>
             </div>
             <div class="calendar" id="calendar"></div>
+            
+            <div id="debugInfo" class="debug-info"></div>
             
             <p class="shape-hint">● Privati / Domestici &nbsp;&nbsp; ■ Commerciali / Non Domestici</p>
             
@@ -322,16 +354,16 @@
             <div class="file-input-wrapper">
                 <input type="file" id="fileInput" accept=".json" onchange="loadCalendarFile(event)">
                 <label for="fileInput" class="file-input-label">
-                     Clicca per selezionare file JSON
+                    📁 Clicca per selezionare file JSON
                 </label>
             </div>
-            <button onclick="downloadTemplate()" style="margin-top: 10px;"> Scarica Template</button>
+            <button onclick="downloadTemplate()" style="margin-top: 10px;">📥 Scarica Template</button>
             <button onclick="downloadCurrentCalendar()">💾 Esporta Calendario Attuale</button>
             <div id="fileStatus"></div>
         </div>
 
         <div class="section">
-            <h2> Condividi l'App</h2>
+            <h2>📱 Condividi l'App</h2>
             <p style="margin-bottom: 15px; color: #aaa; text-align: center;">Inquadra questo QR code per aprire l'app sul tuo telefono:</p>
             <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 15px;">
                 <img id="qrImage" src="" alt="QR Code" style="width: 200px; height: 200px; display: block; margin: 0 auto;">
@@ -415,6 +447,7 @@
             
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const today = new Date();
+            let daysWithWaste = 0;
             
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayElement = document.createElement('div');
@@ -428,6 +461,7 @@
                 
                 if (calendarData[dateStr]) {
                     dayElement.classList.add('has-waste');
+                    daysWithWaste++;
                     
                     let indicatorsHTML = '<div class="waste-indicators">';
                     calendarData[dateStr].forEach(waste => {
@@ -436,13 +470,27 @@
                     });
                     indicatorsHTML += '</div>';
                     
-                    dayElement.innerHTML = `<span>${day}</span>${indicatorsHTML}`;
+                    dayElement.innerHTML = `<div class="day-number">${day}</div>${indicatorsHTML}`;
                     dayElement.onclick = () => showWasteInfo(dateStr);
                 } else {
-                    dayElement.textContent = day;
+                    dayElement.innerHTML = `<div class="day-number">${day}</div>`;
                 }
                 
                 calendar.appendChild(dayElement);
+            }
+            
+            // Debug info
+            const totalEntries = Object.keys(calendarData).length;
+            const debugEl = document.getElementById('debugInfo');
+            if (totalEntries === 0) {
+                debugEl.innerHTML = '⚠️ Nessun dato caricato! Carica il file JSON del calendario.';
+                debugEl.style.color = '#ff4444';
+            } else if (daysWithWaste === 0) {
+                debugEl.innerHTML = `ℹ️ ${totalEntries} giorni nel database, ma nessuno in ${new Date(year, month).toLocaleString('it', { month: 'long' })} ${year}. Usa le frecce per navigare al 2026.`;
+                debugEl.style.color = '#FFD700';
+            } else {
+                debugEl.innerHTML = `✅ ${daysWithWaste} giorni con rifiuti in questo mese (${totalEntries} totali nel database)`;
+                debugEl.style.color = '#00ff88';
             }
         }
 
@@ -474,7 +522,7 @@
             const wastes = calendarData[dateStr];
             if (!wastes) return;
             const names = wastes.map(w => wasteNames[w] || w).join(', ');
-            alert(`📅 Data: ${dateStr}\n\n🗑️ Materiali da esporre:\n${names}`);
+            alert(` Data: ${dateStr}\n\n️ Materiali da esporre:\n${names}`);
         }
 
         function changeMonth(delta) {
@@ -573,7 +621,7 @@
                         const wastes = calendarData[dateStr];
                         if (wastes) {
                             const names = wastes.map(w => wasteNames[w] || w).join(', ');
-                            registration.showNotification('🗑️ Ricorda i rifiuti!', {
+                            registration.showNotification('️ Ricorda i rifiuti!', {
                                 body: `Oggi metti fuori: ${names}`,
                                 icon: '/icon-192.png',
                                 badge: '/icon-192.png',
