@@ -120,11 +120,11 @@
         .waste-plastica { background: #FFD700; }
         .waste-vetro { background: #00CED1; }
         .waste-carta { background: #4169E1; }
-        .waste-indifferenziato { background: #808080; }
-        .waste-indifferenziato_non_domestico { background: #696969; }
+        .waste-indifferenziato { background: #DC143C; }
+        .waste-indifferenziato_non_domestico { background: #FF6347; }
         .waste-alluminio { background: #C0C0C0; }
-        .waste-metalli { background: #A9A9A9; }
-        .waste-metalli_commerciali { background: #D3D3D3; }
+        .waste-metalli { background: #9932CC; }
+        .waste-metalli_commerciali { background: #008B8B; }
         .waste-cartone_commerciale { background: #DEB887; }
         .waste-tessili_sanitari { background: #FF69B4; }
         .waste-sfalci_verdi { background: #228B22; }
@@ -263,6 +263,50 @@
             margin-top: 10px;
         }
 
+        .today-info {
+            background: #0a2a1a;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .today-info h3 {
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        .today-waste-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .today-waste-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #1a1a1a;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .today-waste-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .no-waste-today {
+            color: #aaa;
+            font-style: italic;
+        }
+
         @media (max-width: 480px) {
             .calendar-day {
                 padding: 8px 3px;
@@ -293,6 +337,12 @@
         <div id="installPrompt" class="install-prompt" style="display: none;">
             <p>📱 Installa l'app per ricevere notifiche anche quando è chiusa!</p>
             <button onclick="installApp()">Installa App</button>
+        </div>
+
+        <!-- Info Oggi -->
+        <div class="today-info" id="todayInfo">
+            <h3>📅 Oggi</h3>
+            <div id="todayWasteList"></div>
         </div>
 
         <!-- Calendario -->
@@ -354,7 +404,7 @@
 
         <!-- Impostazioni Notifiche -->
         <div class="section">
-            <h2>⏰ Orario Avviso</h2>
+            <h2> Orario Avviso</h2>
             <p style="margin-bottom: 10px; color: #aaa;">Scegli a che ora ricevere la notifica per mettere fuori i rifiuti:</p>
             <input type="time" id="notificationTime" value="20:00">
             <button onclick="saveNotificationTime()">Salva Orario</button>
@@ -373,13 +423,13 @@
                 </label>
             </div>
             <button onclick="downloadTemplate()" style="margin-top: 10px;">📥 Scarica Template</button>
-            <button onclick="downloadCurrentCalendar()"> Esporta Calendario Attuale</button>
+            <button onclick="downloadCurrentCalendar()">💾 Esporta Calendario Attuale</button>
             <div id="fileStatus"></div>
         </div>
 
         <!-- QR Code -->
         <div class="section">
-            <h2> Condividi</h2>
+            <h2>📱 Condividi</h2>
             <p style="margin-bottom: 10px; color: #aaa;">Scansiona il QR code per condividere il calendario:</p>
             <button onclick="generateQRCode()">Genera QR Code</button>
             <div id="qrcode"></div>
@@ -394,10 +444,27 @@
         let notificationTime = '20:00';
         let deferredPrompt = null;
 
+        // Nomi dei rifiuti in italiano
+        const wasteNames = {
+            'organico': 'Organico',
+            'plastica': 'Plastica',
+            'vetro': 'Vetro',
+            'carta': 'Carta',
+            'indifferenziato': 'Indifferenziato',
+            'indifferenziato_non_domestico': 'Ind. Non Dom.',
+            'metalli': 'Metalli',
+            'metalli_commerciali': 'Met. Comm.',
+            'cartone_commerciale': 'Cartone Comm.',
+            'tessili_sanitari': 'Tessili San.',
+            'sfalci_verdi': 'Sfalci Verdi',
+            'alluminio': 'Alluminio'
+        };
+
         // Inizializzazione
         document.addEventListener('DOMContentLoaded', () => {
             loadCalendarData();
             renderCalendar();
+            showTodayInfo();
             loadSettings();
             setupNotifications();
             checkInstallPrompt();
@@ -409,38 +476,13 @@
             if (saved) {
                 calendarData = JSON.parse(saved);
             } else {
-                // Dati di esempio
-                calendarData = generateSampleData();
-                saveCalendarData();
+                calendarData = {};
             }
         }
 
         // Salva dati nel localStorage
         function saveCalendarData() {
             localStorage.setItem('wasteCalendar', JSON.stringify(calendarData));
-        }
-
-        // Genera dati di esempio
-        function generateSampleData() {
-            const data = {};
-            const year = new Date().getFullYear();
-            const wasteTypes = ['organico', 'plastica', 'vetro', 'carta', 'indifferenziato', 'alluminio'];
-            
-            for (let month = 0; month < 12; month++) {
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const dayOfWeek = new Date(year, month, day).getDay();
-                    
-                    // Assegna rifiuti in base al giorno della settimana
-                    if (dayOfWeek === 1) data[dateStr] = ['organico'];
-                    else if (dayOfWeek === 2) data[dateStr] = ['plastica', 'alluminio'];
-                    else if (dayOfWeek === 3) data[dateStr] = ['organico'];
-                    else if (dayOfWeek === 4) data[dateStr] = ['carta'];
-                    else if (dayOfWeek === 5) data[dateStr] = ['organico', 'vetro'];
-                }
-            }
-            return data;
         }
 
         // Renderizza calendario
@@ -492,10 +534,9 @@
                 if (calendarData[dateStr]) {
                     dayElement.classList.add('has-waste');
                     
-                    // Crea tutti gli indicatori per ogni materiale
                     let indicatorsHTML = '<div class="waste-indicators">';
                     calendarData[dateStr].forEach(waste => {
-                        indicatorsHTML += `<div class="waste-indicator waste-${waste}" title="${waste}"></div>`;
+                        indicatorsHTML += `<div class="waste-indicator waste-${waste}" title="${wasteNames[waste] || waste}"></div>`;
                     });
                     indicatorsHTML += '</div>';
                     
@@ -512,25 +553,37 @@
             }
         }
 
+        // Mostra info rifiuti del giorno
+        function showTodayInfo() {
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const wastes = calendarData[dateStr];
+            const container = document.getElementById('todayWasteList');
+            
+            if (wastes && wastes.length > 0) {
+                let html = '<div class="today-waste-list">';
+                wastes.forEach(waste => {
+                    html += `
+                        <div class="today-waste-item">
+                            <div class="today-waste-dot waste-${waste}"></div>
+                            <span>${wasteNames[waste] || waste}</span>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<p class="no-waste-today">Nessun rifiuto da esporre oggi</p>';
+            }
+        }
+
         // Mostra info rifiuti
         function showWasteInfo(dateStr) {
             const wastes = calendarData[dateStr];
-            const wasteNames = {
-                'organico': '🟤 Organico',
-                'plastica': '🟡 Plastica',
-                'vetro': '🔵 Vetro',
-                'carta': '🔷 Carta',
-                'indifferenziato': '⚫ Indifferenziato',
-                'indifferenziato_non_domestico': '⚫ Ind. Non Dom.',
-                'metalli': ' Metalli',
-                'metalli_commerciali': '⚪ Met. Comm.',
-                'cartone_commerciale': '🟫 Cartone Comm.',
-                'tessili_sanitari': '🩷 Tessili San.',
-                'sfalci_verdi': '🟢 Sfalci Verdi'
-            };
+            if (!wastes) return;
             
             const names = wastes.map(w => wasteNames[w] || w).join(', ');
-            alert(`Data: ${dateStr}\nMateriali da esporre:\n${names}`);
+            alert(` Data: ${dateStr}\n\n️ Materiali da esporre:\n${names}`);
         }
 
         // Cambia mese
@@ -551,6 +604,7 @@
                     calendarData = data;
                     saveCalendarData();
                     renderCalendar();
+                    showTodayInfo();
                     showStatus('fileStatus', 'Calendario aggiornato con successo!', 'success');
                 } catch (error) {
                     showStatus('fileStatus', 'Errore nel caricamento del file. Verifica il formato JSON.', 'error');
@@ -562,9 +616,8 @@
         // Scarica template
         function downloadTemplate() {
             const template = {
-                "2026-01-01": ["organico"],
-                "2026-01-02": ["plastica", "alluminio"],
-                "2026-01-03": ["carta"]
+                "2026-01-02": ["cartone_commerciale"],
+                "2026-01-03": ["organico", "indifferenziato", "tessili_sanitari", "vetro"]
             };
             downloadJSON(template, 'template_calendario_rifiuti.json');
         }
@@ -651,24 +704,11 @@
                     const timeUntilNotification = notifTime - now;
                     
                     setTimeout(() => {
-                        const today = new Date().toISOString().split('T')[0];
-                        const wastes = calendarData[today];
+                        const today = new Date();
+                        const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                        const wastes = calendarData[dateStr];
                         
                         if (wastes) {
-                            const wasteNames = {
-                                'organico': 'Organico',
-                                'plastica': 'Plastica',
-                                'vetro': 'Vetro',
-                                'carta': 'Carta',
-                                'indifferenziato': 'Indifferenziato',
-                                'indifferenziato_non_domestico': 'Ind. Non Dom.',
-                                'metalli': 'Metalli',
-                                'metalli_commerciali': 'Met. Comm.',
-                                'cartone_commerciale': 'Cartone Comm.',
-                                'tessili_sanitari': 'Tessili San.',
-                                'sfalci_verdi': 'Sfalci Verdi'
-                            };
-                            
                             const names = wastes.map(w => wasteNames[w] || w).join(', ');
                             
                             registration.showNotification('🗑️ Ricorda i rifiuti!', {
