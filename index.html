@@ -207,11 +207,28 @@
         .today-waste-dot.shape-square { border-radius: 2px; }
         .no-waste-today { color: #aaa; font-style: italic; }
 
+        /* CORREZIONE PER SCHERMI PICCOLI (SMARTPHONE) */
         @media (max-width: 480px) {
-            .calendar-day { padding: 8px 3px; font-size: 12px; min-height: 40px; }
-            .calendar-header { font-size: 10px; padding: 8px 3px; }
-            .waste-indicator { width: 8px; height: 8px; }
-            .legend-item { font-size: 10px; }
+            .calendar-day { 
+                padding: 5px 2px; 
+                font-size: 11px; 
+                min-height: 55px; /* Aumentato per far stare i simboli su più righe */
+            }
+            .calendar-header { 
+                font-size: 10px; 
+                padding: 8px 2px; 
+            }
+            .waste-indicator { 
+                width: 10px; /* Ingrandito da 8 a 10 */
+                height: 10px; 
+                border: none; /* Tolto il bordo per far vedere il colore pieno */
+            }
+            .waste-indicators {
+                gap: 2px;
+            }
+            .legend-item { 
+                font-size: 10px; 
+            }
         }
     </style>
 </head>
@@ -350,7 +367,7 @@
             loadSettings();
             setupNotifications();
             checkInstallPrompt();
-            loadQRCode(); // Carica il QR code automaticamente
+            loadQRCode();
         });
 
         function loadCalendarData() {
@@ -455,7 +472,7 @@
             const wastes = calendarData[dateStr];
             if (!wastes) return;
             const names = wastes.map(w => wasteNames[w] || w).join(', ');
-            alert(` Data: ${dateStr}\n\n🗑️ Materiali da esporre:\n${names}`);
+            alert(`📅 Data: ${dateStr}\n\n🗑️ Materiali da esporre:\n${names}`);
         }
 
         function changeMonth(delta) {
@@ -504,10 +521,8 @@
             URL.revokeObjectURL(url);
         }
 
-        // NUOVA FUNZIONE QR CODE (senza librerie esterne)
         function loadQRCode() {
             const url = window.location.href;
-            // Usa un API pubblica e affidabile per generare il QR code
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(url)}`;
             document.getElementById('qrImage').src = qrApiUrl;
         }
