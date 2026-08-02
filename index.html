@@ -167,7 +167,7 @@
             transition: all 0.3s;
         }
         .file-input-label:hover { background: #3a3a3a; border-color: #00cc6a; }
-        #qrcode { text-align: center; margin-top: 15px; padding: 20px; background: #fff; border-radius: 10px; }
+        
         .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .month-nav button { width: auto; padding: 8px 15px; }
         .month-nav h3 { color: #00ff88; font-size: 18px; }
@@ -230,7 +230,7 @@
         </div>
 
         <div class="section">
-            <h2>📅 Calendario Raccolta</h2>
+            <h2> Calendario Raccolta</h2>
             <div class="month-nav">
                 <button onclick="changeMonth(-1)">◀</button>
                 <h3 id="currentMonth"></h3>
@@ -312,14 +312,14 @@
         </div>
 
         <div class="section">
-            <h2>📱 Condividi</h2>
-            <p style="margin-bottom: 10px; color: #aaa;">Scansiona il QR code per condividere il calendario:</p>
-            <button onclick="generateQRCode()">Genera QR Code</button>
-            <div id="qrcode"></div>
+            <h2>📱 Condividi l'App</h2>
+            <p style="margin-bottom: 15px; color: #aaa; text-align: center;">Inquadra questo QR code per aprire l'app sul tuo telefono:</p>
+            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 15px;">
+                <img id="qrImage" src="" alt="QR Code" style="width: 200px; height: 200px; display: block; margin: 0 auto;">
+            </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
         let calendarData = {};
         let currentDate = new Date();
@@ -341,7 +341,6 @@
             'alluminio': 'Alluminio'
         };
 
-        // Lista dei rifiuti "commerciali/non domestici" che avranno forma quadrata
         const commercialWastes = ['cartone_commerciale', 'metalli_commerciali', 'indifferenziato_non_domestico'];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -351,6 +350,7 @@
             loadSettings();
             setupNotifications();
             checkInstallPrompt();
+            loadQRCode(); // Carica il QR code automaticamente
         });
 
         function loadCalendarData() {
@@ -455,7 +455,7 @@
             const wastes = calendarData[dateStr];
             if (!wastes) return;
             const names = wastes.map(w => wasteNames[w] || w).join(', ');
-            alert(`📅 Data: ${dateStr}\n\n🗑️ Materiali da esporre:\n${names}`);
+            alert(` Data: ${dateStr}\n\n🗑️ Materiali da esporre:\n${names}`);
         }
 
         function changeMonth(delta) {
@@ -504,16 +504,12 @@
             URL.revokeObjectURL(url);
         }
 
-        function generateQRCode() {
+        // NUOVA FUNZIONE QR CODE (senza librerie esterne)
+        function loadQRCode() {
             const url = window.location.href;
-            QRCode.toDataURL(url, {
-                width: 300,
-                margin: 2,
-                color: { dark: '#000000', light: '#ffffff' }
-            }, (err, url) => {
-                if (err) { console.error(err); return; }
-                document.getElementById('qrcode').innerHTML = `<img src="${url}" alt="QR Code" style="max-width: 100%;">`;
-            });
+            // Usa un API pubblica e affidabile per generare il QR code
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(url)}`;
+            document.getElementById('qrImage').src = qrApiUrl;
         }
 
         function setupNotifications() {
