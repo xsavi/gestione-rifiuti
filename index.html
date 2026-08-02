@@ -101,19 +101,33 @@
             position: relative;
         }
 
+        .waste-indicators {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            justify-content: center;
+            margin-top: 5px;
+        }
+
         .waste-indicator {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            margin-top: 3px;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
         .waste-organico { background: #8B4513; }
         .waste-plastica { background: #FFD700; }
         .waste-vetro { background: #00CED1; }
         .waste-carta { background: #4169E1; }
-        .waste-indifferenziata { background: #808080; }
+        .waste-indifferenziato { background: #808080; }
+        .waste-indifferenziato_non_domestico { background: #696969; }
         .waste-alluminio { background: #C0C0C0; }
+        .waste-metalli { background: #A9A9A9; }
+        .waste-metalli_commerciali { background: #D3D3D3; }
+        .waste-cartone_commerciale { background: #DEB887; }
+        .waste-tessili_sanitari { background: #FF69B4; }
+        .waste-sfalci_verdi { background: #228B22; }
 
         .legend {
             display: flex;
@@ -127,13 +141,14 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .legend-color {
             width: 15px;
             height: 15px;
             border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
         input, select, button {
@@ -215,16 +230,6 @@
             font-size: 18px;
         }
 
-        .notification-badge {
-            display: inline-block;
-            background: #ff4444;
-            color: #fff;
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-
         .status {
             padding: 10px;
             border-radius: 8px;
@@ -269,6 +274,15 @@
                 font-size: 10px;
                 padding: 8px 3px;
             }
+
+            .waste-indicator {
+                width: 8px;
+                height: 8px;
+            }
+
+            .legend-item {
+                font-size: 10px;
+            }
         }
     </style>
 </head>
@@ -308,12 +322,32 @@
                     <span>Carta</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-indifferenziata"></div>
-                    <span>Indifferenziata</span>
+                    <div class="legend-color waste-indifferenziato"></div>
+                    <span>Indifferenziato</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-alluminio"></div>
-                    <span>Alluminio</span>
+                    <div class="legend-color waste-indifferenziato_non_domestico"></div>
+                    <span>Ind. Non Dom.</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color waste-metalli"></div>
+                    <span>Metalli</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color waste-metalli_commerciali"></div>
+                    <span>Met. Comm.</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color waste-cartone_commerciale"></div>
+                    <span>Cartone Comm.</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color waste-tessili_sanitari"></div>
+                    <span>Tessili San.</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color waste-sfalci_verdi"></div>
+                    <span>Sfalci Verdi</span>
                 </div>
             </div>
         </div>
@@ -339,13 +373,13 @@
                 </label>
             </div>
             <button onclick="downloadTemplate()" style="margin-top: 10px;">📥 Scarica Template</button>
-            <button onclick="downloadCurrentCalendar()">💾 Esporta Calendario Attuale</button>
+            <button onclick="downloadCurrentCalendar()"> Esporta Calendario Attuale</button>
             <div id="fileStatus"></div>
         </div>
 
         <!-- QR Code -->
         <div class="section">
-            <h2>📱 Condividi</h2>
+            <h2> Condividi</h2>
             <p style="margin-bottom: 10px; color: #aaa;">Scansiona il QR code per condividere il calendario:</p>
             <button onclick="generateQRCode()">Genera QR Code</button>
             <div id="qrcode"></div>
@@ -390,7 +424,7 @@
         function generateSampleData() {
             const data = {};
             const year = new Date().getFullYear();
-            const wasteTypes = ['organico', 'plastica', 'vetro', 'carta', 'indifferenziata', 'alluminio'];
+            const wasteTypes = ['organico', 'plastica', 'vetro', 'carta', 'indifferenziato', 'alluminio'];
             
             for (let month = 0; month < 12; month++) {
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -457,9 +491,17 @@
                 
                 if (calendarData[dateStr]) {
                     dayElement.classList.add('has-waste');
+                    
+                    // Crea tutti gli indicatori per ogni materiale
+                    let indicatorsHTML = '<div class="waste-indicators">';
+                    calendarData[dateStr].forEach(waste => {
+                        indicatorsHTML += `<div class="waste-indicator waste-${waste}" title="${waste}"></div>`;
+                    });
+                    indicatorsHTML += '</div>';
+                    
                     dayElement.innerHTML = `
                         <span>${day}</span>
-                        <div class="waste-indicator waste-${calendarData[dateStr][0]}"></div>
+                        ${indicatorsHTML}
                     `;
                     dayElement.onclick = () => showWasteInfo(dateStr);
                 } else {
@@ -478,12 +520,17 @@
                 'plastica': '🟡 Plastica',
                 'vetro': '🔵 Vetro',
                 'carta': '🔷 Carta',
-                'indifferenziata': '⚫ Indifferenziata',
-                'alluminio': '⚪ Alluminio'
+                'indifferenziato': '⚫ Indifferenziato',
+                'indifferenziato_non_domestico': '⚫ Ind. Non Dom.',
+                'metalli': ' Metalli',
+                'metalli_commerciali': '⚪ Met. Comm.',
+                'cartone_commerciale': '🟫 Cartone Comm.',
+                'tessili_sanitari': '🩷 Tessili San.',
+                'sfalci_verdi': '🟢 Sfalci Verdi'
             };
             
-            const names = wastes.map(w => wasteNames[w]).join(', ');
-            alert(`Data: ${dateStr}\nRifiuti: ${names}`);
+            const names = wastes.map(w => wasteNames[w] || w).join(', ');
+            alert(`Data: ${dateStr}\nMateriali da esporre:\n${names}`);
         }
 
         // Cambia mese
@@ -515,9 +562,9 @@
         // Scarica template
         function downloadTemplate() {
             const template = {
-                "2024-01-01": ["organico"],
-                "2024-01-02": ["plastica", "alluminio"],
-                "2024-01-03": ["carta"]
+                "2026-01-01": ["organico"],
+                "2026-01-02": ["plastica", "alluminio"],
+                "2026-01-03": ["carta"]
             };
             downloadJSON(template, 'template_calendario_rifiuti.json');
         }
@@ -591,19 +638,17 @@
 
         function scheduleDailyNotification() {
             if ('serviceWorker' in navigator && Notification.permission === 'granted') {
-                // Registra service worker per notifiche in background
                 navigator.serviceWorker.ready.then(registration => {
-                    // Pianifica notifica giornaliera
                     const [hours, minutes] = notificationTime.split(':');
                     const now = new Date();
-                    const notificationTime = new Date();
-                    notificationTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                    const notifTime = new Date();
+                    notifTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
                     
-                    if (notificationTime < now) {
-                        notificationTime.setDate(notificationTime.getDate() + 1);
+                    if (notifTime < now) {
+                        notifTime.setDate(notifTime.getDate() + 1);
                     }
                     
-                    const timeUntilNotification = notificationTime - now;
+                    const timeUntilNotification = notifTime - now;
                     
                     setTimeout(() => {
                         const today = new Date().toISOString().split('T')[0];
@@ -615,11 +660,16 @@
                                 'plastica': 'Plastica',
                                 'vetro': 'Vetro',
                                 'carta': 'Carta',
-                                'indifferenziata': 'Indifferenziata',
-                                'alluminio': 'Alluminio'
+                                'indifferenziato': 'Indifferenziato',
+                                'indifferenziato_non_domestico': 'Ind. Non Dom.',
+                                'metalli': 'Metalli',
+                                'metalli_commerciali': 'Met. Comm.',
+                                'cartone_commerciale': 'Cartone Comm.',
+                                'tessili_sanitari': 'Tessili San.',
+                                'sfalci_verdi': 'Sfalci Verdi'
                             };
                             
-                            const names = wastes.map(w => wasteNames[w]).join(', ');
+                            const names = wastes.map(w => wasteNames[w] || w).join(', ');
                             
                             registration.showNotification('🗑️ Ricorda i rifiuti!', {
                                 body: `Oggi metti fuori: ${names}`,
@@ -630,7 +680,6 @@
                             });
                         }
                         
-                        // Riprogramma per il giorno dopo
                         setTimeout(() => scheduleDailyNotification(), 24 * 60 * 60 * 1000);
                     }, timeUntilNotification);
                 });
