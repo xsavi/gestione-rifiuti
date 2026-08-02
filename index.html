@@ -9,12 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #000000;
@@ -22,12 +17,7 @@
             min-height: 100vh;
             padding: 20px;
         }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
+        .container { max-width: 600px; margin: 0 auto; }
         h1 {
             text-align: center;
             margin-bottom: 30px;
@@ -35,7 +25,6 @@
             font-size: 28px;
             text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
         }
-
         .section {
             background: #1a1a1a;
             border-radius: 15px;
@@ -44,7 +33,6 @@
             border: 1px solid #333;
             box-shadow: 0 4px 15px rgba(0, 255, 136, 0.1);
         }
-
         .section h2 {
             color: #00ff88;
             margin-bottom: 15px;
@@ -53,14 +41,12 @@
             align-items: center;
             gap: 10px;
         }
-
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 5px;
             margin-top: 15px;
         }
-
         .calendar-header {
             text-align: center;
             padding: 10px;
@@ -70,7 +56,6 @@
             border-radius: 5px;
             font-size: 12px;
         }
-
         .calendar-day {
             text-align: center;
             padding: 12px 5px;
@@ -86,21 +71,9 @@
             align-items: center;
             font-size: 14px;
         }
-
-        .calendar-day:hover {
-            background: #3a3a3a;
-            transform: scale(1.05);
-        }
-
-        .calendar-day.today {
-            border-color: #00ff88;
-            background: #1a3a2a;
-        }
-
-        .calendar-day.has-waste {
-            position: relative;
-        }
-
+        .calendar-day:hover { background: #3a3a3a; transform: scale(1.05); }
+        .calendar-day.today { border-color: #00ff88; background: #1a3a2a; }
+        .calendar-day.has-waste { position: relative; }
         .waste-indicators {
             display: flex;
             flex-wrap: wrap;
@@ -108,19 +81,14 @@
             justify-content: center;
             margin-top: 5px;
         }
-
-        /* Stile base per gli indicatori */
         .waste-indicator {
             width: 10px;
             height: 10px;
             border: 1px solid rgba(255,255,255,0.4);
         }
-
-        /* Forme */
         .shape-circle { border-radius: 50%; }
         .shape-square { border-radius: 2px; }
 
-        /* Colori (inalterati) */
         .waste-organico { background: #8B4513; }
         .waste-plastica { background: #FFD700; }
         .waste-vetro { background: #00CED1; }
@@ -141,20 +109,12 @@
             margin-top: 15px;
             justify-content: center;
         }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 11px;
-        }
-
+        .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; }
         .legend-color {
             width: 14px;
             height: 14px;
             border: 1px solid rgba(255,255,255,0.4);
         }
-
         .legend-color.shape-circle { border-radius: 50%; }
         .legend-color.shape-square { border-radius: 2px; }
 
@@ -176,7 +136,6 @@
             color: #fff;
             font-size: 16px;
         }
-
         button {
             background: #00ff88;
             color: #000;
@@ -185,25 +144,18 @@
             border: none;
             transition: all 0.3s;
         }
-
         button:hover {
             background: #00cc6a;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
         }
-
         .file-input-wrapper {
             position: relative;
             overflow: hidden;
             display: inline-block;
             width: 100%;
         }
-
-        .file-input-wrapper input[type=file] {
-            position: absolute;
-            left: -9999px;
-        }
-
+        .file-input-wrapper input[type=file] { position: absolute; left: -9999px; }
         .file-input-label {
             display: block;
             padding: 12px;
@@ -214,57 +166,14 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-
-        .file-input-label:hover {
-            background: #3a3a3a;
-            border-color: #00cc6a;
-        }
-
-        #qrcode {
-            text-align: center;
-            margin-top: 15px;
-            padding: 20px;
-            background: #fff;
-            border-radius: 10px;
-        }
-
-        .month-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .month-nav button {
-            width: auto;
-            padding: 8px 15px;
-        }
-
-        .month-nav h3 {
-            color: #00ff88;
-            font-size: 18px;
-        }
-
-        .status {
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .status.success {
-            background: #1a3a2a;
-            color: #00ff88;
-            border: 1px solid #00ff88;
-        }
-
-        .status.error {
-            background: #3a1a1a;
-            color: #ff4444;
-            border: 1px solid #ff4444;
-        }
-
+        .file-input-label:hover { background: #3a3a3a; border-color: #00cc6a; }
+        #qrcode { text-align: center; margin-top: 15px; padding: 20px; background: #fff; border-radius: 10px; }
+        .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .month-nav button { width: auto; padding: 8px 15px; }
+        .month-nav h3 { color: #00ff88; font-size: 18px; }
+        .status { padding: 10px; border-radius: 8px; margin-top: 10px; text-align: center; font-size: 14px; }
+        .status.success { background: #1a3a2a; color: #00ff88; border: 1px solid #00ff88; }
+        .status.error { background: #3a1a1a; color: #ff4444; border: 1px solid #ff4444; }
         .install-prompt {
             background: #1a3a2a;
             border: 2px solid #00ff88;
@@ -273,11 +182,7 @@
             text-align: center;
             margin-bottom: 20px;
         }
-
-        .install-prompt button {
-            margin-top: 10px;
-        }
-
+        .install-prompt button { margin-top: 10px; }
         .today-info {
             background: #0a2a1a;
             border: 2px solid #00ff88;
@@ -286,20 +191,8 @@
             margin-bottom: 20px;
             text-align: center;
         }
-
-        .today-info h3 {
-            color: #00ff88;
-            margin-bottom: 10px;
-        }
-
-        .today-waste-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-
+        .today-info h3 { color: #00ff88; margin-bottom: 10px; }
+        .today-waste-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
         .today-waste-item {
             display: flex;
             align-items: center;
@@ -309,60 +202,33 @@
             border-radius: 15px;
             font-size: 13px;
         }
-
-        .today-waste-dot {
-            width: 14px;
-            height: 14px;
-            border: 1px solid rgba(255,255,255,0.4);
-        }
-
+        .today-waste-dot { width: 14px; height: 14px; border: 1px solid rgba(255,255,255,0.4); }
         .today-waste-dot.shape-circle { border-radius: 50%; }
         .today-waste-dot.shape-square { border-radius: 2px; }
-
-        .no-waste-today {
-            color: #aaa;
-            font-style: italic;
-        }
+        .no-waste-today { color: #aaa; font-style: italic; }
 
         @media (max-width: 480px) {
-            .calendar-day {
-                padding: 8px 3px;
-                font-size: 12px;
-                min-height: 40px;
-            }
-
-            .calendar-header {
-                font-size: 10px;
-                padding: 8px 3px;
-            }
-
-            .waste-indicator {
-                width: 8px;
-                height: 8px;
-            }
-
-            .legend-item {
-                font-size: 10px;
-            }
+            .calendar-day { padding: 8px 3px; font-size: 12px; min-height: 40px; }
+            .calendar-header { font-size: 10px; padding: 8px 3px; }
+            .waste-indicator { width: 8px; height: 8px; }
+            .legend-item { font-size: 10px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>️ Gestione Rifiuti</h1>
+        <h1>🗑️ Gestione Rifiuti</h1>
 
         <div id="installPrompt" class="install-prompt" style="display: none;">
             <p>📱 Installa l'app per ricevere notifiche anche quando è chiusa!</p>
             <button onclick="installApp()">Installa App</button>
         </div>
 
-        <!-- Info Oggi -->
         <div class="today-info" id="todayInfo">
             <h3>📅 Oggi</h3>
             <div id="todayWasteList"></div>
         </div>
 
-        <!-- Calendario -->
         <div class="section">
             <h2>📅 Calendario Raccolta</h2>
             <div class="month-nav">
@@ -372,7 +238,7 @@
             </div>
             <div class="calendar" id="calendar"></div>
             
-            <p class="shape-hint">● Privati &nbsp;&nbsp; ■ Commerciali</p>
+            <p class="shape-hint">● Privati / Domestici &nbsp;&nbsp; ■ Commerciali / Non Domestici</p>
             
             <div class="legend">
                 <div class="legend-item">
@@ -396,7 +262,7 @@
                     <span>Indifferenziato</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-indifferenziato_non_domestico shape-circle"></div>
+                    <div class="legend-color waste-indifferenziato_non_domestico shape-square"></div>
                     <span>Ind. Non Dom.</span>
                 </div>
                 <div class="legend-item">
@@ -422,7 +288,6 @@
             </div>
         </div>
 
-        <!-- Impostazioni Notifiche -->
         <div class="section">
             <h2>⏰ Orario Avviso</h2>
             <p style="margin-bottom: 10px; color: #aaa;">Scegli a che ora ricevere la notifica per mettere fuori i rifiuti:</p>
@@ -432,7 +297,6 @@
             <div id="notificationStatus"></div>
         </div>
 
-        <!-- Aggiornamento Calendario -->
         <div class="section">
             <h2>📤 Aggiorna Calendario</h2>
             <p style="margin-bottom: 10px; color: #aaa;">Carica un file JSON con il calendario aggiornato:</p>
@@ -447,7 +311,6 @@
             <div id="fileStatus"></div>
         </div>
 
-        <!-- QR Code -->
         <div class="section">
             <h2>📱 Condividi</h2>
             <p style="margin-bottom: 10px; color: #aaa;">Scansiona il QR code per condividere il calendario:</p>
@@ -458,13 +321,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
-        // Dati calendario
         let calendarData = {};
         let currentDate = new Date();
         let notificationTime = '20:00';
         let deferredPrompt = null;
 
-        // Nomi dei rifiuti in italiano
         const wasteNames = {
             'organico': 'Organico',
             'plastica': 'Plastica',
@@ -480,7 +341,9 @@
             'alluminio': 'Alluminio'
         };
 
-        // Inizializzazione
+        // Lista dei rifiuti "commerciali/non domestici" che avranno forma quadrata
+        const commercialWastes = ['cartone_commerciale', 'metalli_commerciali', 'indifferenziato_non_domestico'];
+
         document.addEventListener('DOMContentLoaded', () => {
             loadCalendarData();
             renderCalendar();
@@ -490,7 +353,6 @@
             checkInstallPrompt();
         });
 
-        // Carica dati dal localStorage
         function loadCalendarData() {
             const saved = localStorage.getItem('wasteCalendar');
             if (saved) {
@@ -500,12 +362,10 @@
             }
         }
 
-        // Salva dati nel localStorage
         function saveCalendarData() {
             localStorage.setItem('wasteCalendar', JSON.stringify(calendarData));
         }
 
-        // Renderizza calendario
         function renderCalendar() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
@@ -516,7 +376,6 @@
             const calendar = document.getElementById('calendar');
             calendar.innerHTML = '';
             
-            // Header giorni della settimana
             const days = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
             days.forEach(day => {
                 const header = document.createElement('div');
@@ -525,19 +384,16 @@
                 calendar.appendChild(header);
             });
             
-            // Primo giorno del mese
             const firstDay = new Date(year, month, 1);
             let startingDay = firstDay.getDay() - 1;
             if (startingDay < 0) startingDay = 6;
             
-            // Giorni vuoti
             for (let i = 0; i < startingDay; i++) {
                 const empty = document.createElement('div');
                 empty.className = 'calendar-day';
                 calendar.appendChild(empty);
             }
             
-            // Giorni del mese
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const today = new Date();
             
@@ -556,17 +412,12 @@
                     
                     let indicatorsHTML = '<div class="waste-indicators">';
                     calendarData[dateStr].forEach(waste => {
-                        // Determina la forma: quadrato per commerciali, cerchio per privati
-                        const isCommercial = waste.includes('commerciale') || waste.includes('commerciali');
-                        const shapeClass = isCommercial ? 'shape-square' : 'shape-circle';
+                        const shapeClass = commercialWastes.includes(waste) ? 'shape-square' : 'shape-circle';
                         indicatorsHTML += `<div class="waste-indicator waste-${waste} ${shapeClass}" title="${wasteNames[waste] || waste}"></div>`;
                     });
                     indicatorsHTML += '</div>';
                     
-                    dayElement.innerHTML = `
-                        <span>${day}</span>
-                        ${indicatorsHTML}
-                    `;
+                    dayElement.innerHTML = `<span>${day}</span>${indicatorsHTML}`;
                     dayElement.onclick = () => showWasteInfo(dateStr);
                 } else {
                     dayElement.textContent = day;
@@ -576,7 +427,6 @@
             }
         }
 
-        // Mostra info rifiuti del giorno
         function showTodayInfo() {
             const today = new Date();
             const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -586,8 +436,7 @@
             if (wastes && wastes.length > 0) {
                 let html = '<div class="today-waste-list">';
                 wastes.forEach(waste => {
-                    const isCommercial = waste.includes('commerciale') || waste.includes('commerciali');
-                    const shapeClass = isCommercial ? 'shape-square' : 'shape-circle';
+                    const shapeClass = commercialWastes.includes(waste) ? 'shape-square' : 'shape-circle';
                     html += `
                         <div class="today-waste-item">
                             <div class="today-waste-dot waste-${waste} ${shapeClass}"></div>
@@ -602,26 +451,21 @@
             }
         }
 
-        // Mostra info rifiuti
         function showWasteInfo(dateStr) {
             const wastes = calendarData[dateStr];
             if (!wastes) return;
-            
             const names = wastes.map(w => wasteNames[w] || w).join(', ');
             alert(`📅 Data: ${dateStr}\n\n🗑️ Materiali da esporre:\n${names}`);
         }
 
-        // Cambia mese
         function changeMonth(delta) {
             currentDate.setMonth(currentDate.getMonth() + delta);
             renderCalendar();
         }
 
-        // Carica file calendario
         function loadCalendarFile(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
@@ -638,21 +482,18 @@
             reader.readAsText(file);
         }
 
-        // Scarica template
         function downloadTemplate() {
             const template = {
                 "2026-01-02": ["cartone_commerciale"],
-                "2026-01-03": ["organico", "indifferenziato", "tessili_sanitari", "vetro"]
+                "2026-01-03": ["organico", "indifferenziato", "indifferenziato_non_domestico", "tessili_sanitari", "vetro"]
             };
             downloadJSON(template, 'template_calendario_rifiuti.json');
         }
 
-        // Esporta calendario attuale
         function downloadCurrentCalendar() {
             downloadJSON(calendarData, 'calendario_rifiuti.json');
         }
 
-        // Download JSON
         function downloadJSON(data, filename) {
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -663,32 +504,21 @@
             URL.revokeObjectURL(url);
         }
 
-        // Genera QR Code
         function generateQRCode() {
             const url = window.location.href;
             QRCode.toDataURL(url, {
                 width: 300,
                 margin: 2,
-                color: {
-                    dark: '#000000',
-                    light: '#ffffff'
-                }
+                color: { dark: '#000000', light: '#ffffff' }
             }, (err, url) => {
-                if (err) {
-                    console.error(err);
-                    return;
-                }
-                const qrcodeDiv = document.getElementById('qrcode');
-                qrcodeDiv.innerHTML = `<img src="${url}" alt="QR Code" style="max-width: 100%;">`;
+                if (err) { console.error(err); return; }
+                document.getElementById('qrcode').innerHTML = `<img src="${url}" alt="QR Code" style="max-width: 100%;">`;
             });
         }
 
-        // Gestione notifiche
         function setupNotifications() {
-            if ('Notification' in window) {
-                if (Notification.permission === 'granted') {
-                    scheduleDailyNotification();
-                }
+            if ('Notification' in window && Notification.permission === 'granted') {
+                scheduleDailyNotification();
             }
         }
 
@@ -721,21 +551,15 @@
                     const now = new Date();
                     const notifTime = new Date();
                     notifTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                    
-                    if (notifTime < now) {
-                        notifTime.setDate(notifTime.getDate() + 1);
-                    }
-                    
+                    if (notifTime < now) notifTime.setDate(notifTime.getDate() + 1);
                     const timeUntilNotification = notifTime - now;
                     
                     setTimeout(() => {
                         const today = new Date();
                         const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                         const wastes = calendarData[dateStr];
-                        
                         if (wastes) {
                             const names = wastes.map(w => wasteNames[w] || w).join(', ');
-                            
                             registration.showNotification('🗑️ Ricorda i rifiuti!', {
                                 body: `Oggi metti fuori: ${names}`,
                                 icon: '/icon-192.png',
@@ -744,7 +568,6 @@
                                 tag: 'daily-waste-reminder'
                             });
                         }
-                        
                         setTimeout(() => scheduleDailyNotification(), 24 * 60 * 60 * 1000);
                     }, timeUntilNotification);
                 });
@@ -759,7 +582,6 @@
             }
         }
 
-        // PWA Install
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
@@ -784,22 +606,15 @@
             }
         }
 
-        // Utility: mostra stato
         function showStatus(elementId, message, type) {
             const element = document.getElementById(elementId);
             element.innerHTML = `<div class="status ${type}">${message}</div>`;
-            setTimeout(() => {
-                element.innerHTML = '';
-            }, 5000);
+            setTimeout(() => { element.innerHTML = ''; }, 5000);
         }
 
-        // Registra Service Worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(registration => {
-                console.log('Service Worker registrato');
-            }).catch(error => {
-                console.log('Errore registrazione Service Worker:', error);
-            });
+            navigator.serviceWorker.register('sw.js').then(() => console.log('Service Worker registrato'))
+            .catch(error => console.log('Errore Service Worker:', error));
         }
     </script>
 </body>
