@@ -109,13 +109,18 @@
             margin-top: 5px;
         }
 
+        /* Stile base per gli indicatori */
         .waste-indicator {
             width: 10px;
             height: 10px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.4);
         }
 
+        /* Forme */
+        .shape-circle { border-radius: 50%; }
+        .shape-square { border-radius: 2px; }
+
+        /* Colori (inalterati) */
         .waste-organico { background: #8B4513; }
         .waste-plastica { background: #FFD700; }
         .waste-vetro { background: #00CED1; }
@@ -145,10 +150,20 @@
         }
 
         .legend-color {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.3);
+            width: 14px;
+            height: 14px;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .legend-color.shape-circle { border-radius: 50%; }
+        .legend-color.shape-square { border-radius: 2px; }
+
+        .shape-hint {
+            text-align: center;
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 10px;
+            font-style: italic;
         }
 
         input, select, button {
@@ -288,19 +303,21 @@
         .today-waste-item {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
             background: #1a1a1a;
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 15px;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .today-waste-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.3);
+            width: 14px;
+            height: 14px;
+            border: 1px solid rgba(255,255,255,0.4);
         }
+
+        .today-waste-dot.shape-circle { border-radius: 50%; }
+        .today-waste-dot.shape-square { border-radius: 2px; }
 
         .no-waste-today {
             color: #aaa;
@@ -332,7 +349,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🗑️ Gestione Rifiuti</h1>
+        <h1>️ Gestione Rifiuti</h1>
 
         <div id="installPrompt" class="install-prompt" style="display: none;">
             <p>📱 Installa l'app per ricevere notifiche anche quando è chiusa!</p>
@@ -354,49 +371,52 @@
                 <button onclick="changeMonth(1)">▶</button>
             </div>
             <div class="calendar" id="calendar"></div>
+            
+            <p class="shape-hint">● Privati &nbsp;&nbsp; ■ Commerciali</p>
+            
             <div class="legend">
                 <div class="legend-item">
-                    <div class="legend-color waste-organico"></div>
+                    <div class="legend-color waste-organico shape-circle"></div>
                     <span>Organico</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-plastica"></div>
+                    <div class="legend-color waste-plastica shape-circle"></div>
                     <span>Plastica</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-vetro"></div>
+                    <div class="legend-color waste-vetro shape-circle"></div>
                     <span>Vetro</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-carta"></div>
+                    <div class="legend-color waste-carta shape-circle"></div>
                     <span>Carta</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-indifferenziato"></div>
+                    <div class="legend-color waste-indifferenziato shape-circle"></div>
                     <span>Indifferenziato</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-indifferenziato_non_domestico"></div>
+                    <div class="legend-color waste-indifferenziato_non_domestico shape-circle"></div>
                     <span>Ind. Non Dom.</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-metalli"></div>
+                    <div class="legend-color waste-metalli shape-circle"></div>
                     <span>Metalli</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-metalli_commerciali"></div>
+                    <div class="legend-color waste-metalli_commerciali shape-square"></div>
                     <span>Met. Comm.</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-cartone_commerciale"></div>
+                    <div class="legend-color waste-cartone_commerciale shape-square"></div>
                     <span>Cartone Comm.</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-tessili_sanitari"></div>
+                    <div class="legend-color waste-tessili_sanitari shape-circle"></div>
                     <span>Tessili San.</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-sfalci_verdi"></div>
+                    <div class="legend-color waste-sfalci_verdi shape-circle"></div>
                     <span>Sfalci Verdi</span>
                 </div>
             </div>
@@ -404,7 +424,7 @@
 
         <!-- Impostazioni Notifiche -->
         <div class="section">
-            <h2> Orario Avviso</h2>
+            <h2>⏰ Orario Avviso</h2>
             <p style="margin-bottom: 10px; color: #aaa;">Scegli a che ora ricevere la notifica per mettere fuori i rifiuti:</p>
             <input type="time" id="notificationTime" value="20:00">
             <button onclick="saveNotificationTime()">Salva Orario</button>
@@ -536,7 +556,10 @@
                     
                     let indicatorsHTML = '<div class="waste-indicators">';
                     calendarData[dateStr].forEach(waste => {
-                        indicatorsHTML += `<div class="waste-indicator waste-${waste}" title="${wasteNames[waste] || waste}"></div>`;
+                        // Determina la forma: quadrato per commerciali, cerchio per privati
+                        const isCommercial = waste.includes('commerciale') || waste.includes('commerciali');
+                        const shapeClass = isCommercial ? 'shape-square' : 'shape-circle';
+                        indicatorsHTML += `<div class="waste-indicator waste-${waste} ${shapeClass}" title="${wasteNames[waste] || waste}"></div>`;
                     });
                     indicatorsHTML += '</div>';
                     
@@ -563,9 +586,11 @@
             if (wastes && wastes.length > 0) {
                 let html = '<div class="today-waste-list">';
                 wastes.forEach(waste => {
+                    const isCommercial = waste.includes('commerciale') || waste.includes('commerciali');
+                    const shapeClass = isCommercial ? 'shape-square' : 'shape-circle';
                     html += `
                         <div class="today-waste-item">
-                            <div class="today-waste-dot waste-${waste}"></div>
+                            <div class="today-waste-dot waste-${waste} ${shapeClass}"></div>
                             <span>${wasteNames[waste] || waste}</span>
                         </div>
                     `;
@@ -583,7 +608,7 @@
             if (!wastes) return;
             
             const names = wastes.map(w => wasteNames[w] || w).join(', ');
-            alert(` Data: ${dateStr}\n\n️ Materiali da esporre:\n${names}`);
+            alert(`📅 Data: ${dateStr}\n\n🗑️ Materiali da esporre:\n${names}`);
         }
 
         // Cambia mese
