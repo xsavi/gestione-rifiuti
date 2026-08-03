@@ -80,6 +80,8 @@
             line-height: 1;
             margin-bottom: 2px;
         }
+        
+        /* NUOVI SIMBOLI CON LETTERE COLORATE */
         .waste-indicators {
             display: flex;
             flex-wrap: wrap;
@@ -88,15 +90,20 @@
             max-width: 100%;
             line-height: 1;
         }
-        .waste-indicator {
-            width: 8px;
-            height: 8px;
-            border: 2px solid #ffffff;
-            box-shadow: 0 0 2px rgba(0,0,0,0.8);
-            flex-shrink: 0;
+        .waste-symbol {
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #000;
+            border: 1px solid #fff;
+            border-radius: 2px;
         }
-        .shape-circle { border-radius: 50%; }
-        .shape-square { border-radius: 2px; }
+        .waste-symbol.shape-circle { border-radius: 50%; }
+        .waste-symbol.shape-square { border-radius: 2px; }
 
         .waste-organico { background: #8B4513; }
         .waste-plastica { background: #FFD700; }
@@ -120,9 +127,15 @@
         }
         .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; }
         .legend-color {
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             border: 2px solid #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #000;
         }
         .legend-color.shape-circle { border-radius: 50%; }
         .legend-color.shape-square { border-radius: 2px; }
@@ -211,7 +224,17 @@
             border-radius: 15px;
             font-size: 13px;
         }
-        .today-waste-dot { width: 14px; height: 14px; border: 2px solid #ffffff; }
+        .today-waste-dot { 
+            width: 18px; 
+            height: 18px; 
+            border: 2px solid #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #000;
+        }
         .today-waste-dot.shape-circle { border-radius: 50%; }
         .today-waste-dot.shape-square { border-radius: 2px; }
         .no-waste-today { color: #aaa; font-style: italic; }
@@ -262,14 +285,20 @@
             gap: 4px;
             align-items: center;
         }
-        .day-list-indicator {
-            width: 16px;
-            height: 16px;
+        .day-list-symbol {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
             border: 2px solid #ffffff;
-            box-shadow: 0 0 3px rgba(0,0,0,0.8);
+            border-radius: 3px;
         }
-        .day-list-indicator.shape-circle { border-radius: 50%; }
-        .day-list-indicator.shape-square { border-radius: 3px; }
+        .day-list-symbol.shape-circle { border-radius: 50%; }
+        .day-list-symbol.shape-square { border-radius: 3px; }
 
         @media (max-width: 480px) {
             .calendar { display: none; }
@@ -282,7 +311,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🗑️ Gestione Rifiuti</h1>
+        <h1>️ Gestione Rifiuti</h1>
 
         <div id="installPrompt" class="install-prompt" style="display: none;">
             <p>📱 Installa l'app per ricevere notifiche anche quando è chiusa!</p>
@@ -302,11 +331,7 @@
                 <button onclick="changeMonth(1)">▶</button>
             </div>
             
-            <!-- Vista griglia per desktop -->
             <div class="calendar" id="calendar"></div>
-            <div id="calendarHeaders"></div>
-            
-            <!-- Vista lista per smartphone -->
             <div class="day-list" id="dayList"></div>
             
             <div id="debugInfo" class="debug-info"></div>
@@ -315,47 +340,47 @@
             
             <div class="legend">
                 <div class="legend-item">
-                    <div class="legend-color waste-organico shape-circle"></div>
+                    <div class="legend-color waste-organico shape-circle">O</div>
                     <span>Organico</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-plastica shape-circle"></div>
+                    <div class="legend-color waste-plastica shape-circle">P</div>
                     <span>Plastica</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-vetro shape-circle"></div>
+                    <div class="legend-color waste-vetro shape-circle">V</div>
                     <span>Vetro</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-carta shape-circle"></div>
+                    <div class="legend-color waste-carta shape-circle">C</div>
                     <span>Carta</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-indifferenziato shape-circle"></div>
+                    <div class="legend-color waste-indifferenziato shape-circle">I</div>
                     <span>Indifferenziato</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-indifferenziato_non_domestico shape-square"></div>
+                    <div class="legend-color waste-indifferenziato_non_domestico shape-square">N</div>
                     <span>Ind. Non Dom.</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-metalli shape-circle"></div>
+                    <div class="legend-color waste-metalli shape-circle">M</div>
                     <span>Metalli</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-metalli_commerciali shape-square"></div>
+                    <div class="legend-color waste-metalli_commerciali shape-square">K</div>
                     <span>Met. Comm.</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-cartone_commerciale shape-square"></div>
+                    <div class="legend-color waste-cartone_commerciale shape-square">B</div>
                     <span>Cartone Comm.</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-tessili_sanitari shape-circle"></div>
+                    <div class="legend-color waste-tessili_sanitari shape-circle">T</div>
                     <span>Tessili San.</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color waste-sfalci_verdi shape-circle"></div>
+                    <div class="legend-color waste-sfalci_verdi shape-circle">S</div>
                     <span>Sfalci Verdi</span>
                 </div>
             </div>
@@ -380,7 +405,7 @@
                 </label>
             </div>
             <button onclick="downloadTemplate()" style="margin-top: 10px;">📥 Scarica Template</button>
-            <button onclick="downloadCurrentCalendar()"> Esporta Calendario Attuale</button>
+            <button onclick="downloadCurrentCalendar()">💾 Esporta Calendario Attuale</button>
             <div id="fileStatus"></div>
         </div>
 
@@ -414,6 +439,21 @@
             'alluminio': 'Alluminio'
         };
 
+        const wasteLetters = {
+            'organico': 'O',
+            'plastica': 'P',
+            'vetro': 'V',
+            'carta': 'C',
+            'indifferenziato': 'I',
+            'indifferenziato_non_domestico': 'N',
+            'metalli': 'M',
+            'metalli_commerciali': 'K',
+            'cartone_commerciale': 'B',
+            'tessili_sanitari': 'T',
+            'sfalci_verdi': 'S',
+            'alluminio': 'A'
+        };
+
         const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
         const commercialWastes = ['cartone_commerciale', 'metalli_commerciali', 'indifferenziato_non_domestico'];
 
@@ -430,14 +470,22 @@
         function loadCalendarData() {
             const saved = localStorage.getItem('wasteCalendar');
             if (saved) {
-                calendarData = JSON.parse(saved);
+                try {
+                    calendarData = JSON.parse(saved);
+                    console.log('Dati caricati:', Object.keys(calendarData).length, 'giorni');
+                } catch (e) {
+                    console.error('Errore parsing:', e);
+                    calendarData = {};
+                }
             } else {
+                console.log('Nessun dato salvato');
                 calendarData = {};
             }
         }
 
         function saveCalendarData() {
             localStorage.setItem('wasteCalendar', JSON.stringify(calendarData));
+            console.log('Dati salvati:', Object.keys(calendarData).length, 'giorni');
         }
 
         function renderCalendar() {
@@ -447,9 +495,7 @@
             document.getElementById('currentMonth').textContent = 
                 new Date(year, month).toLocaleString('it', { month: 'long', year: 'numeric' });
             
-            // Renderizza griglia desktop
             renderGridCalendar(year, month);
-            // Renderizza lista mobile
             renderDayList(year, month);
         }
 
@@ -496,7 +542,8 @@
                     let indicatorsHTML = '<div class="waste-indicators">';
                     calendarData[dateStr].forEach(waste => {
                         const shapeClass = commercialWastes.includes(waste) ? 'shape-square' : 'shape-circle';
-                        indicatorsHTML += `<div class="waste-indicator waste-${waste} ${shapeClass}" title="${wasteNames[waste] || waste}"></div>`;
+                        const letter = wasteLetters[waste] || '?';
+                        indicatorsHTML += `<div class="waste-symbol waste-${waste} ${shapeClass}" title="${wasteNames[waste] || waste}">${letter}</div>`;
                     });
                     indicatorsHTML += '</div>';
                     
@@ -537,7 +584,8 @@
                     let indicatorsHTML = '<div class="day-list-indicators">';
                     calendarData[dateStr].forEach(waste => {
                         const shapeClass = commercialWastes.includes(waste) ? 'shape-square' : 'shape-circle';
-                        indicatorsHTML += `<div class="day-list-indicator waste-${waste} ${shapeClass}" title="${wasteNames[waste] || waste}"></div>`;
+                        const letter = wasteLetters[waste] || '?';
+                        indicatorsHTML += `<div class="day-list-symbol waste-${waste} ${shapeClass}" title="${wasteNames[waste] || waste}">${letter}</div>`;
                     });
                     indicatorsHTML += '</div>';
                     
@@ -587,9 +635,10 @@
                 let html = '<div class="today-waste-list">';
                 wastes.forEach(waste => {
                     const shapeClass = commercialWastes.includes(waste) ? 'shape-square' : 'shape-circle';
+                    const letter = wasteLetters[waste] || '?';
                     html += `
                         <div class="today-waste-item">
-                            <div class="today-waste-dot waste-${waste} ${shapeClass}"></div>
+                            <div class="today-waste-dot waste-${waste} ${shapeClass}">${letter}</div>
                             <span>${wasteNames[waste] || waste}</span>
                         </div>
                     `;
@@ -605,7 +654,7 @@
             const wastes = calendarData[dateStr];
             if (!wastes) return;
             const names = wastes.map(w => wasteNames[w] || w).join(', ');
-            alert(` Data: ${dateStr}\n\n🗑️ Materiali da esporre:\n${names}`);
+            alert(` Data: ${dateStr}\n\n️ Materiali da esporre:\n${names}`);
         }
 
         function changeMonth(delta) {
@@ -615,19 +664,35 @@
 
         function loadCalendarFile(event) {
             const file = event.target.files[0];
-            if (!file) return;
+            if (!file) {
+                showStatus('fileStatus', 'Nessun file selezionato.', 'error');
+                return;
+            }
+            
+            console.log('File selezionato:', file.name, 'Dimensione:', file.size, 'bytes');
+            
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    const data = JSON.parse(e.target.result);
+                    const content = e.target.result;
+                    console.log('Contenuto file (primi 100 caratteri):', content.substring(0, 100));
+                    
+                    const data = JSON.parse(content);
+                    console.log('JSON parsato con successo, giorni:', Object.keys(data).length);
+                    
                     calendarData = data;
                     saveCalendarData();
                     renderCalendar();
                     showTodayInfo();
-                    showStatus('fileStatus', 'Calendario aggiornato con successo!', 'success');
+                    showStatus('fileStatus', `✅ Calendario aggiornato con successo! ${Object.keys(data).length} giorni caricati.`, 'success');
                 } catch (error) {
-                    showStatus('fileStatus', 'Errore nel caricamento del file. Verifica il formato JSON.', 'error');
+                    console.error('Errore parsing JSON:', error);
+                    showStatus('fileStatus', `❌ Errore: ${error.message}. Verifica che il file sia JSON valido.`, 'error');
                 }
+            };
+            reader.onerror = (e) => {
+                console.error('Errore lettura file:', e);
+                showStatus('fileStatus', '❌ Errore nella lettura del file.', 'error');
             };
             reader.readAsText(file);
         }
