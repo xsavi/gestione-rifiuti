@@ -56,12 +56,9 @@
             border-radius: 5px;
             font-size: 11px;
         }
-        
-        /* NUOVO LAYOUT CELLA CALENDARIO */
         .calendar-day {
-            position: relative;
             text-align: center;
-            padding: 3px 2px;
+            padding: 4px 2px;
             background: #2a2a2a;
             border-radius: 8px;
             cursor: pointer;
@@ -73,22 +70,16 @@
             justify-content: center;
             align-items: center;
             font-size: 13px;
-            overflow: hidden;
         }
         .calendar-day:hover { background: #3a3a3a; transform: scale(1.05); }
         .calendar-day.today { border-color: #00ff88; background: #1a3a2a; }
         .calendar-day.has-waste { background: #333333; }
-        
-        /* Numero del giorno al centro */
         .day-number {
             font-weight: bold;
             font-size: 14px;
             line-height: 1;
             margin-bottom: 2px;
-            z-index: 1;
         }
-        
-        /* Contenitore simboli attorno al numero */
         .waste-indicators {
             display: flex;
             flex-wrap: wrap;
@@ -97,11 +88,9 @@
             max-width: 100%;
             line-height: 1;
         }
-        
-        /* Simboli piccoli ma con bordo spesso per visibilità */
         .waste-indicator {
-            width: 7px;
-            height: 7px;
+            width: 8px;
+            height: 8px;
             border: 2px solid #ffffff;
             box-shadow: 0 0 2px rgba(0,0,0,0.8);
             flex-shrink: 0;
@@ -109,7 +98,6 @@
         .shape-circle { border-radius: 50%; }
         .shape-square { border-radius: 2px; }
 
-        /* Colori */
         .waste-organico { background: #8B4513; }
         .waste-plastica { background: #FFD700; }
         .waste-vetro { background: #00CED1; }
@@ -238,35 +226,63 @@
             text-align: center;
         }
 
+        /* VISTA LISTA PER SMARTPHONE */
+        .day-list {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .day-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #2a2a2a;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .day-list-item:hover { background: #3a3a3a; }
+        .day-list-item.today { border-color: #00ff88; background: #1a3a2a; }
+        .day-list-item.has-waste { background: #333333; }
+        .day-list-date {
+            font-weight: bold;
+            font-size: 16px;
+            min-width: 80px;
+        }
+        .day-list-dayname {
+            font-size: 12px;
+            color: #aaa;
+            margin-left: 10px;
+        }
+        .day-list-indicators {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .day-list-indicator {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 3px rgba(0,0,0,0.8);
+        }
+        .day-list-indicator.shape-circle { border-radius: 50%; }
+        .day-list-indicator.shape-square { border-radius: 3px; }
+
         @media (max-width: 480px) {
-            .calendar-day { 
-                padding: 2px 1px; 
-                min-height: 48px;
-            }
-            .calendar-header { 
-                font-size: 9px; 
-                padding: 6px 1px; 
-            }
-            .day-number {
-                font-size: 12px;
-            }
-            .waste-indicator { 
-                width: 6px;
-                height: 6px; 
-                border: 2px solid #ffffff;
-            }
-            .waste-indicators {
-                gap: 1px;
-            }
-            .legend-item { 
-                font-size: 9px; 
-            }
+            .calendar { display: none; }
+            .calendar-header { display: none; }
+            .day-list { display: flex; }
+            .shape-hint { font-size: 10px; }
+            .legend-item { font-size: 10px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>️ Gestione Rifiuti</h1>
+        <h1>🗑️ Gestione Rifiuti</h1>
 
         <div id="installPrompt" class="install-prompt" style="display: none;">
             <p>📱 Installa l'app per ricevere notifiche anche quando è chiusa!</p>
@@ -274,18 +290,24 @@
         </div>
 
         <div class="today-info" id="todayInfo">
-            <h3> Oggi</h3>
+            <h3>📅 Oggi</h3>
             <div id="todayWasteList"></div>
         </div>
 
         <div class="section">
             <h2>📅 Calendario Raccolta</h2>
             <div class="month-nav">
-                <button onclick="changeMonth(-1)"></button>
+                <button onclick="changeMonth(-1)">◀</button>
                 <h3 id="currentMonth"></h3>
                 <button onclick="changeMonth(1)">▶</button>
             </div>
+            
+            <!-- Vista griglia per desktop -->
             <div class="calendar" id="calendar"></div>
+            <div id="calendarHeaders"></div>
+            
+            <!-- Vista lista per smartphone -->
+            <div class="day-list" id="dayList"></div>
             
             <div id="debugInfo" class="debug-info"></div>
             
@@ -358,7 +380,7 @@
                 </label>
             </div>
             <button onclick="downloadTemplate()" style="margin-top: 10px;">📥 Scarica Template</button>
-            <button onclick="downloadCurrentCalendar()">💾 Esporta Calendario Attuale</button>
+            <button onclick="downloadCurrentCalendar()"> Esporta Calendario Attuale</button>
             <div id="fileStatus"></div>
         </div>
 
@@ -392,6 +414,7 @@
             'alluminio': 'Alluminio'
         };
 
+        const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
         const commercialWastes = ['cartone_commerciale', 'metalli_commerciali', 'indifferenziato_non_domestico'];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -424,6 +447,13 @@
             document.getElementById('currentMonth').textContent = 
                 new Date(year, month).toLocaleString('it', { month: 'long', year: 'numeric' });
             
+            // Renderizza griglia desktop
+            renderGridCalendar(year, month);
+            // Renderizza lista mobile
+            renderDayList(year, month);
+        }
+
+        function renderGridCalendar(year, month) {
             const calendar = document.getElementById('calendar');
             calendar.innerHTML = '';
             
@@ -479,7 +509,60 @@
                 calendar.appendChild(dayElement);
             }
             
-            // Debug info
+            updateDebugInfo(daysWithWaste, year, month);
+        }
+
+        function renderDayList(year, month) {
+            const dayList = document.getElementById('dayList');
+            dayList.innerHTML = '';
+            
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const date = new Date(year, month, day);
+                const dayName = dayNames[date.getDay()];
+                
+                const listItem = document.createElement('div');
+                listItem.className = 'day-list-item';
+                
+                if (today.getDate() === day && today.getMonth() === month && today.getFullYear() === year) {
+                    listItem.classList.add('today');
+                }
+                
+                if (calendarData[dateStr]) {
+                    listItem.classList.add('has-waste');
+                    
+                    let indicatorsHTML = '<div class="day-list-indicators">';
+                    calendarData[dateStr].forEach(waste => {
+                        const shapeClass = commercialWastes.includes(waste) ? 'shape-square' : 'shape-circle';
+                        indicatorsHTML += `<div class="day-list-indicator waste-${waste} ${shapeClass}" title="${wasteNames[waste] || waste}"></div>`;
+                    });
+                    indicatorsHTML += '</div>';
+                    
+                    listItem.innerHTML = `
+                        <div>
+                            <span class="day-list-date">${day}</span>
+                            <span class="day-list-dayname">${dayName}</span>
+                        </div>
+                        ${indicatorsHTML}
+                    `;
+                    listItem.onclick = () => showWasteInfo(dateStr);
+                } else {
+                    listItem.innerHTML = `
+                        <div>
+                            <span class="day-list-date">${day}</span>
+                            <span class="day-list-dayname">${dayName}</span>
+                        </div>
+                    `;
+                }
+                
+                dayList.appendChild(listItem);
+            }
+        }
+
+        function updateDebugInfo(daysWithWaste, year, month) {
             const totalEntries = Object.keys(calendarData).length;
             const debugEl = document.getElementById('debugInfo');
             if (totalEntries === 0) {
@@ -522,7 +605,7 @@
             const wastes = calendarData[dateStr];
             if (!wastes) return;
             const names = wastes.map(w => wasteNames[w] || w).join(', ');
-            alert(` Data: ${dateStr}\n\n️ Materiali da esporre:\n${names}`);
+            alert(` Data: ${dateStr}\n\n🗑️ Materiali da esporre:\n${names}`);
         }
 
         function changeMonth(delta) {
@@ -621,7 +704,7 @@
                         const wastes = calendarData[dateStr];
                         if (wastes) {
                             const names = wastes.map(w => wasteNames[w] || w).join(', ');
-                            registration.showNotification('️ Ricorda i rifiuti!', {
+                            registration.showNotification('🗑️ Ricorda i rifiuti!', {
                                 body: `Oggi metti fuori: ${names}`,
                                 icon: '/icon-192.png',
                                 badge: '/icon-192.png',
